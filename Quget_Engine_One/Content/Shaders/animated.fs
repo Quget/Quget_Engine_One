@@ -9,10 +9,14 @@ out vec4 color;
 void main(void)
 {
 	//ToDo better animation sheet, currently works well with width,
-	float count = vs_spriteUV.x;
+
+	float countX = vs_spriteUV.x;
 	float index = vs_spriteUV.y;
 	float countY = vs_spriteUV.z;
-	//float index = vs_spriteUV.z;
-	vec2 newCoords = vec2( vs_textureCoordinate.x/count + ((1/count)* index),vs_textureCoordinate.y/countY);
+
+	float indexX = floor(mod(index,countX));
+	float indexY = floor(index / countY);
+
+	vec2 newCoords = vec2( vs_textureCoordinate.x/countX + ((1/countX)* indexX),vs_textureCoordinate.y/countY + ((1/countY)* indexY));
 	color = texture(textureObject,newCoords) * vs_color;
 }

@@ -14,6 +14,7 @@ namespace Quget_Engine_One.GameObjects
         public Vector4 rotation;
         public Vector3 scale;
         protected Matrix4 modelView;
+
         public GameObject(Renderable render,Vector4 position,Vector4 rotation)
         {
             this.render = render;
@@ -32,13 +33,11 @@ namespace Quget_Engine_One.GameObjects
         {
             this.scale = scale;
         }
+
         public virtual void Update(double time)
         {
-            //position += direction * (velocity * (float)delta);
-            //rotation += new Vector4(0, 0, 1 * (float)time, 0);
+
         }
-        int count = 0;
-        int current = 0;
         public virtual void Render()
         {
             render.Bind();
@@ -49,24 +48,6 @@ namespace Quget_Engine_One.GameObjects
             var s = Matrix4.CreateScale(scale);
             modelView = r1 * r2 * r3 * s * t2;
             GL.UniformMatrix4(21, false, ref modelView);
-
-            if(count == 10)
-            {
-                current++;
-                if (current == 3)
-                    current = 0;
-
-                count = 0;
-            }
-            Vector3 AnimatedUV = new Vector3();
-            AnimatedUV.X = 4;
-            AnimatedUV.Y = current;// 1;
-            AnimatedUV.Z = 4;
-            GL.Uniform3(22, AnimatedUV);
-           
-
-            count++;
-            //32
             render.Render();
         }
         public void Dispose()
