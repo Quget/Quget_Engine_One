@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Quget_Engine_One.Renderables;
+using Quget_Engine_One.Gui.Text;
+
 namespace Quget_Engine_One
 {
     class ObjectFactory
@@ -60,6 +62,46 @@ namespace Quget_Engine_One
                 new TexturedVertex(new Vector4(-side, side, side, 1.0f),     new Vector2(0, h), color),
                 new TexturedVertex(new Vector4(side, -side, side, 1.0f),     new Vector2(w, 0), color),
                 new TexturedVertex(new Vector4(side, side, side, 1.0f),      new Vector2(w, h), color),
+            };
+            return vertices;
+        }
+        public static TexturedVertex[] CreateTexturedQuad(float width, float height,float spriteX,float spriteY, Color4 color)
+        {
+            //side = side / 2f; // half side - and other half
+            width = width / 2f;
+            height = height / 2f;
+            float w = 1.0f / spriteX;
+            float h = 1.0f / spriteY;
+            //float h = 32;//textureHeight;
+            //float w = 32;// textureWidth;
+            TexturedVertex[] vertices =
+            {
+                 new TexturedVertex(new Vector4(-width, -height, 0, 1.0f),    new Vector2(0, 0), color),
+                new TexturedVertex(new Vector4(width, -height, 0, 1.0f),     new Vector2(w, 0), color),
+                new TexturedVertex(new Vector4(-width, height, 0, 1.0f),     new Vector2(0, h), color),
+                new TexturedVertex(new Vector4(-width, height, 0, 1.0f),     new Vector2(0, h), color),
+                new TexturedVertex(new Vector4(width, -height, 0, 1.0f),     new Vector2(w, 0), color),
+                new TexturedVertex(new Vector4(width, height, 0, 1.0f),      new Vector2(w, h), color),
+            };
+            return vertices;
+        }
+        public static TexturedVertex[] CreateTexturedCharacter(float width, float height,Color4 color)
+        {
+            float h = 1;
+            float w = Label.CharacterWidthNormalized;
+            width = width / 2f;
+            height = height / 2f;
+            //width = side;
+           // height = side;
+            float depth = 0;
+            TexturedVertex[] vertices =
+            {
+                new TexturedVertex(new Vector4(-width, -height, depth, 1.0f),    new Vector2(0, 0), color),
+                new TexturedVertex(new Vector4(width, -height, depth, 1.0f),     new Vector2(w, 0), color),
+                new TexturedVertex(new Vector4(-width, height, depth, 1.0f),     new Vector2(0, h), color),
+                new TexturedVertex(new Vector4(-width, height, depth, 1.0f),     new Vector2(0, h), color),
+                new TexturedVertex(new Vector4(width, -height, depth, 1.0f),     new Vector2(w, 0), color),
+                new TexturedVertex(new Vector4(width, height, depth, 1.0f),      new Vector2(w, h), color),
             };
             return vertices;
         }

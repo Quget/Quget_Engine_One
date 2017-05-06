@@ -10,24 +10,39 @@ using System.Diagnostics;
 using Quget_Engine_One.Renderables;
 using Quget_Engine_One.GameObjects;
 using System.Threading;
+using Quget_Engine_One.Sound;
+using Quget_Engine_One.Camera;
+using System.Threading.Tasks;
+using Quget_Engine_One.Gui;
 
 namespace Quget_Engine_One
 {
     class GameWindow : OpenTK.GameWindow
     {
 
-        //private ShaderProgram texProgram;
-        //private ShaderProgram colorProgram;
-        //private List<Renderable> renderObjects = new List<Renderable>();
+        private List<Scene> scenes = new List<Scene>();
+        private int selectedScene = -1;
+
         private Dictionary<String, ShaderProgram> programs = new Dictionary<string, ShaderProgram>();
-        private List<GameObject> gameObjects = new List<GameObject>();
         private Matrix4 projectionMatrix;
         public GameWindow():base(1280,720,GraphicsMode.Default,"Quget Engine One",GameWindowFlags.Default,
                             DisplayDevice.Default,4,5,GraphicsContextFlags.ForwardCompatible)
         {
             QKeyboard.Create(this);
-            string version = GL.GetString(StringName.Version);
-            Console.WriteLine("gl version:{0}", version);
+            QMouse.Create(this);
+
+            string version = UnicodeToUTF8(GL.GetString(StringName.Version));
+            string shaderVersion = UnicodeToUTF8(GL.GetString(StringName.ShadingLanguageVersion));
+            string renderer = UnicodeToUTF8(GL.GetString(StringName.Renderer));
+            Console.WriteLine("OpenGL Version   :{0}", version);
+            Console.WriteLine("Shader Version   :{0}", shaderVersion);
+            Console.WriteLine("Render Hardware  :{0}", renderer);
+            //VSync = VSyncMode.On;
+        }
+        public string UnicodeToUTF8(string text)
+        {
+            byte[] toBytes = Encoding.Unicode.GetBytes(text);
+            return Encoding.UTF8.GetString(toBytes);
         }
         public ShaderProgram GetShaderProgram(string name)
         {
@@ -40,9 +55,25 @@ namespace Quget_Engine_One
                 return programs["default"];
             }
         }
-        public void AddGameObject(GameObject gameObject)
+        public void AddScene(Scene scene)
         {
-            gameObjects.Add(gameObject);
+            scenes.Add(scene);
+        }
+        public void RemoveScene(Scene scene)
+        {
+            scenes.Remove(scene);
+        }
+        public void LoadScene(int index)
+        {
+            if (index < 0 || index > scenes.Count)
+                throw new Exception("Index of scene is below 0 or higher then the amount of scenes");
+
+            if(selectedScene != -1)
+                scenes[selectedScene].Exit();
+
+
+            selectedScene = index;
+            scenes[selectedScene].OnLoad();
         }
         protected override void OnResize(EventArgs e)
         {
@@ -74,28 +105,27 @@ namespace Quget_Engine_One
 
             CursorVisible = true;
 
-            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+            GL.PolygonMode(MaterialFace.Front, PolygonMode.Fill);
+            
             GL.PatchParameter(PatchParameterInt.PatchVertices, 3);
 
             GL.Enable(EnableCap.Blend);
+            //GL.BlendEquation(BlendEquationMode.Max);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-           // GL.Enable(EnableCap.DepthTest);
+            //GL.Enable(EnableCap.DepthTest);
             //GL.Enable(EnableCap.CullFace);
             Closed += GameWindow_Closed;
         }
 
         private void GameWindow_Closed(object sender, EventArgs e)
         {
+            QSound.Dispose();
             Exit();
         }
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            onUpdate?.Invoke(this, e);
-
-            for (int i = 0; i < gameObjects.Count; i++)
-            {
-                gameObjects[i].Update(e.Time);
-            }
+            if(selectedScene != -1)
+                scenes[selectedScene].OnUpdateFrame(e);
         }
         private void CreateProjection()
         {
@@ -108,15 +138,15 @@ namespace Quget_Engine_One
                 0.1f,                       // near plane
                 4000f);                     // far plane
                 */
-            projectionMatrix = Matrix4.CreateOrthographicOffCenter(0, this.Width, this.Height, 0, 0.1f, 1000f);
+            //projectionMatrix = Matrix4.CreateOrthographicOffCenter(0, this.Width, this.Height, 0, 0.1f, 10f);
+
+            projectionMatrix = Matrix4.CreateOrthographicOffCenter(0, this.Width, this.Height, 0, 0.1f, 10f);
+
         }
         public override void Exit()
         {
-            Debug.WriteLine("Exit has been called. Exiting...");
-            for(int i = 0; i < gameObjects.Count; i ++)
-            {
-                gameObjects[i].Dispose();
-            }
+            if (selectedScene != -1)
+                scenes[selectedScene].Exit();
             foreach(KeyValuePair<String,ShaderProgram> program in programs)
             {
                 program.Value.Dispose();
@@ -126,28 +156,25 @@ namespace Quget_Engine_One
         }
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            Console.Write("\rVsync: {0} FPS:{1:0}", VSync, 1f / e.Time);
+
             GL.ClearColor(Color4.Purple);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            int lastShaderProgram = -1;
-            for(int i = 0; i < gameObjects.Count; i++)
-            {
-                int program = gameObjects[i].render.GetProgram();
-                if(lastShaderProgram != program)
-                {
-                    GL.UniformMatrix4(20, false, ref projectionMatrix);
-                }
-                lastShaderProgram = program;
-                gameObjects[i].Render();
-            }
-            SwapBuffers();
-        }
+            //ProcessEvents();
 
+            if (selectedScene != -1)
+                scenes[selectedScene].OnRenderFrame(e,ref projectionMatrix);
+
+            Console.Write("\rVsync: {0} FPS:{1:0000000000}", VSync, 1f / e.Time);
+            SwapBuffers();
+            Thread.Sleep(1);//reduce cpu usage.
+        }
+/*
         public delegate void OnFrame(GameWindow sender, FrameEventArgs e);
         public event OnFrame onUpdate;
-
+*/
         public delegate void OnWindowLoad(GameWindow sender, EventArgs e);
         public event OnWindowLoad onWindowLoad;
+
     }
 }

@@ -41,7 +41,7 @@ namespace Quget_Engine_One
             animationCurrent = animationStart;
             isRunning = false;
         }
-        public Vector3 UpdateAnimation(double time)
+        public int UpdateAnimation(double time)
         {
             if (isRunning)
             {
@@ -55,25 +55,27 @@ namespace Quget_Engine_One
                         if (animationCount != -1)
                         {
                             animationCounter++;
-                            if (animationCounter > animationCount)
+                            if (animationCounter >= animationCount)
                             {
                                 isRunning = false;
                                 animationCounter = 0;
+                                //animationCurrent = 0;
                             }   
                         }
                     }
                     
+                    /*
                     Vector3 AnimatedUV = new Vector3();
                     AnimatedUV.X = 4;
                     AnimatedUV.Y = animationCurrent;// 1;
                     AnimatedUV.Z = 4;
-                    //GL.Uniform3(22, AnimatedUV);
+                    */
                     animationTime = 0;//reset
-                    return AnimatedUV;
+                    return animationCurrent;//AnimatedUV;
 
                 }
             }
-            return Vector3.Zero;
+            return -1;//Vector3.Zero;
         }
     }
 }

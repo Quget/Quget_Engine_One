@@ -12,6 +12,10 @@ namespace Quget_Engine_One.Renderables
     class TexturedRenderObject :Renderable
     {
         private int texture;
+        //Tests
+        public TexturedVertex[] vertices;
+        public float height;
+        public float width;
         public TexturedRenderObject(TexturedVertex[] vertices, int program, string fileName):base(program,vertices.Length)
         {
             // create first buffer: vertex
@@ -58,6 +62,10 @@ namespace Quget_Engine_One.Renderables
             GL.VertexArrayVertexBuffer(vertexArray, 0, buffer, IntPtr.Zero, TexturedVertex.Size);
 
             texture = InitTextures(fileName);
+            this.vertices = vertices;
+
+            width = Math.Abs(vertices[0].position.X) * 2;
+            height = Math.Abs(vertices[0].position.Y) * 2;
         }
         private int InitTextures(string fileName)
         {
