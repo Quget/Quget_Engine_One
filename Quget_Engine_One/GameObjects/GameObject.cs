@@ -12,7 +12,7 @@ namespace Quget_Engine_One.GameObjects
     {
         public TexturedRenderObject render { private set; get; }
         public Vector4 position { private set; get; }
-        public Vector4 rotation { private set; get; }
+        public Vector4 rotation { set; get; }
         public Vector3 scale { private set; get; }
         public string name { private set; get; }
         public bool disposed { private set; get; }
@@ -133,7 +133,8 @@ namespace Quget_Engine_One.GameObjects
             position = new Vector4(x, y, z, 0);
 
         }
-        public void SetRotation(float angleX,float angleY,float angleZ,float angleW)
+
+        public void SetRotationAngle(float angleX,float angleY,float angleZ,float angleW)
         {
             rotation = new Vector4(
                 angleX * ((float)Math.PI / 180f),

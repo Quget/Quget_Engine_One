@@ -53,7 +53,7 @@ namespace Quget_Engine_One.Gui
             string path = GenerateFontImage(fontName, fontSize);
             float textSize = (text.Length * fontSize) - fontSize;
             TexturedRenderObject textModel = new TexturedRenderObject(ObjectFactory.CreateTexturedCharacter(fontSize, fontSize, textColor), animatedProgram.id, path);
-            Text.Label renderText = new Text.Label(textModel, new Vector4(position.X - (textSize / 2), position.Y, -1, 0), new Vector4(0, 0, 0, 0), text, fixedOnCam);
+            Text.Label renderText = new Text.Label(textModel, new Vector4(position.X - (textSize / 2), position.Y, -0.9f, 0), new Vector4(0, 0, 0, 0), text, fixedOnCam);
 
             TexturedRenderObject buttonRender = new TexturedRenderObject(ObjectFactory.CreateTexturedQuad(size.X, size.Y, 2, 1, color), animatedProgram.id, "Content/Textures/button.png");
             Button button = new Button(buttonRender, new Vector4(position.X, position.Y, -1, 0), new Vector4(0, 0, 0, 0), text + "Button",renderText, fixedOnCam);
@@ -73,13 +73,20 @@ namespace Quget_Engine_One.Gui
         }
         public Label CreateText(string text, Vector2 position,string fontName, int fontSize, Color4 color, bool fixedOnCam)
         {
+            return CreateText(text, new Vector3(position.X, position.Y, -1), fontName, fontSize,fontSize,fontSize, color, fixedOnCam);
+           
+        }
+
+        public Label CreateText(string text, Vector3 position, string fontName, int fontSize,float width,float height, Color4 color, bool fixedOnCam)
+        {
             string path = GenerateFontImage(fontName, fontSize);
             ShaderProgram animatedProgram = scene.GetShaderProgram("animated");
-            TexturedRenderObject textModel = new TexturedRenderObject(ObjectFactory.CreateTexturedCharacter(fontSize, fontSize, color), animatedProgram.id, path);
-            Label render = new Text.Label(textModel, new Vector4(position.X, position.Y, -1, 0), new Vector4(0, 0, 0, 0), text, fixedOnCam);
+            TexturedRenderObject textModel = new TexturedRenderObject(ObjectFactory.CreateTexturedCharacter(width, height, color), animatedProgram.id, path);
+            Label render = new Text.Label(textModel, new Vector4(position.X, position.Y, position.Z, 0), new Vector4(0, 0, 0, 0), text, fixedOnCam);
             //return render;
             scene.AddGameObject(render);
             return render;
         }
+
     }
 }

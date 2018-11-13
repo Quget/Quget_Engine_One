@@ -25,12 +25,12 @@ namespace Quget_Engine_One
 
         private Dictionary<String, ShaderProgram> programs = new Dictionary<string, ShaderProgram>();
         private Matrix4 projectionMatrix;
+
         public GameWindow():base(1280,720,GraphicsMode.Default,"Quget Engine One",GameWindowFlags.Default,
-                            DisplayDevice.Default,4,5,GraphicsContextFlags.ForwardCompatible)
+                            DisplayDevice.Default,4,5,GraphicsContextFlags.Default)
         {
             QKeyboard.Create(this);
             QMouse.Create(this);
-
             string version = UnicodeToUTF8(GL.GetString(StringName.Version));
             string shaderVersion = UnicodeToUTF8(GL.GetString(StringName.ShadingLanguageVersion));
             string renderer = UnicodeToUTF8(GL.GetString(StringName.Renderer));
@@ -39,11 +39,13 @@ namespace Quget_Engine_One
             Console.WriteLine("Render Hardware  :{0}", renderer);
             //VSync = VSyncMode.On;
         }
+
         public string UnicodeToUTF8(string text)
         {
             byte[] toBytes = Encoding.Unicode.GetBytes(text);
             return Encoding.UTF8.GetString(toBytes);
         }
+
         public ShaderProgram GetShaderProgram(string name)
         {
             if(programs.ContainsKey(name))
@@ -55,10 +57,12 @@ namespace Quget_Engine_One
                 return programs["default"];
             }
         }
+
         public void AddScene(Scene scene)
         {
             scenes.Add(scene);
         }
+
         public void RemoveScene(Scene scene)
         {
             scenes.Remove(scene);
@@ -110,9 +114,10 @@ namespace Quget_Engine_One
             GL.PatchParameter(PatchParameterInt.PatchVertices, 3);
 
             GL.Enable(EnableCap.Blend);
+            //GL.Disable(EnableCap.Blend);
             //GL.BlendEquation(BlendEquationMode.Max);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-            //GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.DepthTest);
             //GL.Enable(EnableCap.CullFace);
             Closed += GameWindow_Closed;
         }
@@ -127,10 +132,11 @@ namespace Quget_Engine_One
             if(selectedScene != -1)
                 scenes[selectedScene].OnUpdateFrame(e);
         }
+
         private void CreateProjection()
         {
 
-            var aspectRatio = (float)Width / Height;
+            //var aspectRatio = (float)Width / Height;
             /*
             projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(
                 60 * ((float)Math.PI / 180f), // field of view angle, in radians
@@ -140,8 +146,24 @@ namespace Quget_Engine_One
                 */
             //projectionMatrix = Matrix4.CreateOrthographicOffCenter(0, this.Width, this.Height, 0, 0.1f, 10f);
 
-            projectionMatrix = Matrix4.CreateOrthographicOffCenter(0, this.Width, this.Height, 0, 0.1f, 10f);
+            //projectionMatrix = Matrix4.CreateOrthographicOffCenter(0, this.Width, this.Height, 0, 0.1f, 10f);
+            ToPerspective();
+        }
 
+        public void ToPerspective()
+        {
+            var aspectRatio = (float)Width / Height;
+            projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(
+                60 * ((float)Math.PI / 180f), // field of view angle, in radians
+                aspectRatio,                // current window aspect ratio
+                0.1f,                       // near plane
+                4000f);                     // far plane
+
+        }
+
+        public void ToOrthographic()
+        {
+            projectionMatrix = Matrix4.CreateOrthographicOffCenter(0, this.Width, this.Height, 0, 0.1f, 10f);
         }
         public override void Exit()
         {
@@ -163,7 +185,10 @@ namespace Quget_Engine_One
             //ProcessEvents();
 
             if (selectedScene != -1)
-                scenes[selectedScene].OnRenderFrame(e,ref projectionMatrix);
+            {
+                scenes[selectedScene].OnRenderFrame(e, ref projectionMatrix);
+            }
+                
 
             Console.Write("\rVsync: {0} FPS:{1:0000000000}", VSync, 1f / e.Time);
             SwapBuffers();

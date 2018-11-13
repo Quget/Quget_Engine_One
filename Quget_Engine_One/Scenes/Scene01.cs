@@ -23,10 +23,11 @@ namespace Quget_Engine_One.Scenes
 
         public Scene01(GameWindow gameWindow) : base(gameWindow)
         {
-
+            
         }
         public override void OnLoad()
         {
+            gameWindow.ToOrthographic();
             base.OnLoad();
             ShaderProgram program = GetShaderProgram("default");
             int size = 32;
@@ -139,7 +140,7 @@ namespace Quget_Engine_One.Scenes
 
                 Tile tile = map.GetTile(x, y - 1);
                 Console.WriteLine("\n{0}:{1}->{2}", x, y, tile.movement);
-                testPlayer.SetRotation(0, 0, -90, 0);
+                testPlayer.SetRotationAngle(0, 0, -90, 0);
                 if (tile.movement != Tile.Movement.NO_MOVE)
                 {
                     testPlayer.MoveTo(testPlayer.position.X, (y - 1) * 32, speed);
@@ -153,7 +154,7 @@ namespace Quget_Engine_One.Scenes
 
                 Tile tile = map.GetTile(x, y + 1);
                 Console.WriteLine("\n{0}:{1}->{2}", x, y, tile.movement);
-                testPlayer.SetRotation(0, 0, 90, 0);
+                testPlayer.SetRotationAngle(0, 0, 90, 0);
                 if (tile.movement != Tile.Movement.NO_MOVE)
                 {
                     testPlayer.MoveTo(testPlayer.position.X, (y + 1) * 32, speed);
@@ -168,7 +169,7 @@ namespace Quget_Engine_One.Scenes
 
                 Tile tile = map.GetTile(x - 1, y);
                 Console.WriteLine("\n{0}:{1}->{2}", x, y, tile.movement);
-                testPlayer.SetRotation(0, 0, -180, 0);
+                testPlayer.SetRotationAngle(0, 0, -180, 0);
                 if (tile.movement != Tile.Movement.NO_MOVE)
                 {
                     testPlayer.MoveTo((x - 1) * 32, testPlayer.position.Y, speed);
@@ -184,7 +185,7 @@ namespace Quget_Engine_One.Scenes
 
                 Tile tile = map.GetTile(x + 1, y);
                 Console.WriteLine("\n{0}:{1}->{2}", x, y, tile.movement);
-                testPlayer.SetRotation(0, 0, 0, 0);
+                testPlayer.SetRotationAngle(0, 0, 0, 0);
                 if (tile.movement != Tile.Movement.NO_MOVE)
                 {
                     testPlayer.MoveTo((x + 1) * 32, testPlayer.position.Y, speed);

@@ -33,7 +33,7 @@ namespace Quget_Engine_One
         {
             gameWindow.AddScene(new Scene01(gameWindow));
             gameWindow.AddScene(new Scene02(gameWindow));
-            gameWindow.LoadScene(0);
+            gameWindow.LoadScene(1);
         }
     }
 }
