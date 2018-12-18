@@ -17,20 +17,31 @@ using Quget_Engine_One.Gui;
 
 namespace Quget_Engine_One
 {
+    /// <summary>
+    /// Game Window
+    /// </summary>
     class GameWindow : OpenTK.GameWindow
     {
 
+       
         private List<Scene> scenes = new List<Scene>();
         private int selectedScene = -1;
 
-        private Dictionary<String, ShaderProgram> programs = new Dictionary<string, ShaderProgram>();
+        private Dictionary<string, ShaderProgram> programs = new Dictionary<string, ShaderProgram>();
         private Matrix4 projectionMatrix;
 
+        /// <summary>
+        /// Constructor of the game window, It's 1280x720, gives it a name, windowed mode, default display
+        /// Open GL 4.5
+        /// </summary>
         public GameWindow():base(1280,720,GraphicsMode.Default,"Quget Engine One",GameWindowFlags.Default,
                             DisplayDevice.Default,4,5,GraphicsContextFlags.Default)
         {
+            //Listen to keyboard input
             QKeyboard.Create(this);
+            //Listen to mouse input
             QMouse.Create(this);
+
             string version = UnicodeToUTF8(GL.GetString(StringName.Version));
             string shaderVersion = UnicodeToUTF8(GL.GetString(StringName.ShadingLanguageVersion));
             string renderer = UnicodeToUTF8(GL.GetString(StringName.Renderer));
@@ -40,12 +51,17 @@ namespace Quget_Engine_One
             //VSync = VSyncMode.On;
         }
 
+        //Convert text from unicode to utf8
         public string UnicodeToUTF8(string text)
         {
             byte[] toBytes = Encoding.Unicode.GetBytes(text);
             return Encoding.UTF8.GetString(toBytes);
         }
-
+        /// <summary>
+        /// Ask for a shader program, if it doesn't exsist then return a default shader
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public ShaderProgram GetShaderProgram(string name)
         {
             if(programs.ContainsKey(name))
@@ -58,15 +74,28 @@ namespace Quget_Engine_One
             }
         }
 
+        /// <summary>
+        /// Add a scene
+        /// </summary>
+        /// <param name="scene"></param>
         public void AddScene(Scene scene)
         {
             scenes.Add(scene);
         }
 
+        /// <summary>
+        /// Remove a scene
+        /// </summary>
+        /// <param name="scene"></param>
         public void RemoveScene(Scene scene)
         {
             scenes.Remove(scene);
         }
+
+        /// <summary>
+        /// Load a scene
+        /// </summary>
+        /// <param name="index"></param>
         public void LoadScene(int index)
         {
             if (index < 0 || index > scenes.Count)
@@ -79,11 +108,20 @@ namespace Quget_Engine_One
             selectedScene = index;
             scenes[selectedScene].OnLoad();
         }
+
+        /// <summary>
+        /// Do something when the window is changing size.
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnResize(EventArgs e)
         {
             GL.Viewport(0, 0, this.Width, this.Height);
             CreateProjection();
         }
+
+        /// <summary>
+        /// Load all the shaders from the folder Content/Shaders
+        /// </summary>
         private void LinkShaders()
         {
             DirectoryInfo directoryInfo = new DirectoryInfo("Content/Shaders");
@@ -100,6 +138,11 @@ namespace Quget_Engine_One
             }
 
         }
+        /// <summary>
+        /// When the game window is loading or loaded
+        /// Load the shaders,setup OpenGL variables
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnLoad(EventArgs e)
         {
             CreateProjection();
@@ -109,6 +152,7 @@ namespace Quget_Engine_One
 
             CursorVisible = true;
 
+            
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Fill);
             
             GL.PatchParameter(PatchParameterInt.PatchVertices, 3);
@@ -122,17 +166,28 @@ namespace Quget_Engine_One
             Closed += GameWindow_Closed;
         }
 
+        /// <summary>
+        /// When de game window is closed, there will be things to clean up
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void GameWindow_Closed(object sender, EventArgs e)
         {
             QSound.Dispose();
             Exit();
         }
+        /// <summary>
+        /// Call the Update method in the scene on every frame
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             if(selectedScene != -1)
                 scenes[selectedScene].OnUpdateFrame(e);
         }
-
+        /// <summary>
+        /// Create a projection. A camera. Default is Perspective
+        /// </summary>
         private void CreateProjection()
         {
 
@@ -150,6 +205,9 @@ namespace Quget_Engine_One
             ToPerspective();
         }
 
+        /// <summary>
+        /// Create a perspective view
+        /// </summary>
         public void ToPerspective()
         {
             var aspectRatio = (float)Width / Height;
@@ -161,10 +219,17 @@ namespace Quget_Engine_One
 
         }
 
+        /// <summary>
+        /// Orthographic view
+        /// </summary>
         public void ToOrthographic()
         {
             projectionMatrix = Matrix4.CreateOrthographicOffCenter(0, this.Width, this.Height, 0, 0.1f, 10f);
         }
+
+        /// <summary>
+        /// Clear up all the things
+        /// </summary>
         public override void Exit()
         {
             if (selectedScene != -1)
@@ -176,6 +241,10 @@ namespace Quget_Engine_One
 
             base.Exit();
         }
+        /// <summary>
+        /// Every frame Render called before OnUpdateFrame.
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnRenderFrame(FrameEventArgs e)
         {
 
@@ -188,8 +257,8 @@ namespace Quget_Engine_One
             {
                 scenes[selectedScene].OnRenderFrame(e, ref projectionMatrix);
             }
-                
 
+            this.Title = String.Format("Quget Engine One | \rVsync:{0} | FPS:{1:0000}", VSync, 1f / e.Time);
             Console.Write("\rVsync: {0} FPS:{1:0000000000}", VSync, 1f / e.Time);
             SwapBuffers();
             Thread.Sleep(1);//reduce cpu usage.

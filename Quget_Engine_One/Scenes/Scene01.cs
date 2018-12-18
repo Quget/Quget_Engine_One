@@ -25,6 +25,7 @@ namespace Quget_Engine_One.Scenes
         {
             
         }
+
         public override void OnLoad()
         {
             gameWindow.ToOrthographic();
@@ -35,6 +36,7 @@ namespace Quget_Engine_One.Scenes
             map = new Map(23, 40);
             TexturedRenderObject grass = new TexturedRenderObject(ObjectFactory.CreateTexturedQuad(size, size, 1, 1, Color4.White), program.id, "Content/Textures/grass.png");
             TexturedRenderObject noMove = new TexturedRenderObject(ObjectFactory.CreateTexturedQuad(size, size, 1, 1, Color4.Red), program.id, "Content/Textures/noMove.png");
+            //TexturedRenderObject noMove = new TexturedRenderObject(ObjectFactory.CreateTexturedCube(size, 1, 1, Color4.Red), program.id, "Content/Textures/noMove.png");
             int y = 23;
             int x = 40;
             //List<QObject> moveTiles = new List<QObject>();
@@ -107,7 +109,6 @@ namespace Quget_Engine_One.Scenes
             testPlayer.PlayAnimation("idle");
 
             SetCamera(new FollowCamera(testPlayer, gameWindow));
-            //gameWindow.SetCamera(new StaticCamera( new Vector3(gameWindow.Width/ 2, gameWindow.Height/ 2,0)));
 
             QSound.SetVolume(QSound.SoundType.Music, 80);
         }
@@ -139,7 +140,7 @@ namespace Quget_Engine_One.Scenes
                 int y = (int)testPlayer.position.Y / 32;
 
                 Tile tile = map.GetTile(x, y - 1);
-                Console.WriteLine("\n{0}:{1}->{2}", x, y, tile.movement);
+                //Console.WriteLine("\n{0}:{1}->{2}", x, y, tile.movement);
                 testPlayer.SetRotationAngle(0, 0, -90, 0);
                 if (tile.movement != Tile.Movement.NO_MOVE)
                 {
@@ -153,7 +154,7 @@ namespace Quget_Engine_One.Scenes
                 int y = (int)testPlayer.position.Y / 32;
 
                 Tile tile = map.GetTile(x, y + 1);
-                Console.WriteLine("\n{0}:{1}->{2}", x, y, tile.movement);
+                //Console.WriteLine("\n{0}:{1}->{2}", x, y, tile.movement);
                 testPlayer.SetRotationAngle(0, 0, 90, 0);
                 if (tile.movement != Tile.Movement.NO_MOVE)
                 {
@@ -168,7 +169,7 @@ namespace Quget_Engine_One.Scenes
                 int y = (int)testPlayer.position.Y / 32;
 
                 Tile tile = map.GetTile(x - 1, y);
-                Console.WriteLine("\n{0}:{1}->{2}", x, y, tile.movement);
+               // Console.WriteLine("\n{0}:{1}->{2}", x, y, tile.movement);
                 testPlayer.SetRotationAngle(0, 0, -180, 0);
                 if (tile.movement != Tile.Movement.NO_MOVE)
                 {
@@ -184,7 +185,7 @@ namespace Quget_Engine_One.Scenes
                 int y = (int)testPlayer.position.Y / 32;
 
                 Tile tile = map.GetTile(x + 1, y);
-                Console.WriteLine("\n{0}:{1}->{2}", x, y, tile.movement);
+                //Console.WriteLine("\n{0}:{1}->{2}", x, y, tile.movement);
                 testPlayer.SetRotationAngle(0, 0, 0, 0);
                 if (tile.movement != Tile.Movement.NO_MOVE)
                 {
@@ -214,6 +215,7 @@ namespace Quget_Engine_One.Scenes
 
             base.OnUpdateFrame(e);
         }
+
         private void LoadMoveTiles()
         {
             List<QObject> moveTiles = Reader.LoadFile("Content/Levels/moveTile.qgt");

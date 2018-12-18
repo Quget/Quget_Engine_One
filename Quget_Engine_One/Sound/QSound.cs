@@ -9,9 +9,15 @@ using System.Diagnostics;
 
 namespace Quget_Engine_One.Sound
 {
+    /// <summary>
+    /// Used to play sound. This is expirimental... 
+    /// Still uses ffmpeg to play sounds, might switch to OpenAL.
+    /// </summary>
     class QSound
     {
         private static Dictionary<string, Process> stringProcDic = new Dictionary<string, Process>();
+        private static int MaxThreadCount = 10;
+        private static int threadCount = 0;
         public enum SoundType
         {
             Ambient,
@@ -36,6 +42,7 @@ namespace Quget_Engine_One.Sound
         }
         public static void PlayFFmpeg(string path,string soundID,SoundType type)
         {
+            
             try
             {
                 //FFMPEG process info
@@ -69,6 +76,7 @@ namespace Quget_Engine_One.Sound
         {
             return stringProcDic.ContainsKey(key);
         }
+
         private static void Process_Exited(object sender, EventArgs e)
         {
             Process process = (Process)sender;
@@ -87,9 +95,61 @@ namespace Quget_Engine_One.Sound
             }
             toRemove = null;
         }
+
+        public static void PlayOpenTKT(string path)
+        {
+            Thread thread = new Thread(new ThreadStart(() => {
+                if (threadCount < MaxThreadCount)
+                {
+                    PlayOpenTK(path);
+                }
+            }));
+            thread.Start();
+        }
+
+
+        private static void PlayOpenTK(string path)
+        {
+            using (AudioContext context = new AudioContext())
+            {
+                int buffer = AL.GenBuffer();
+                int source = AL.GenSource();
+                int state;
+
+                int channels = 0, bits_per_sample = 0, sample_rate = 0;
+                byte[] sound_data = null;
+                try
+                {
+                   sound_data = LoadWave(File.Open(path, FileMode.Open), out channels, out bits_per_sample, out sample_rate);
+                }
+                catch(Exception e)
+                {
+                    PlayOpenTK(path);
+                    return;
+                }
+                
+                AL.BufferData(buffer, GetSoundFormat(channels, bits_per_sample), sound_data, sound_data.Length, sample_rate);
+
+                AL.Source(source, ALSourcei.Buffer, buffer);
+                AL.SourcePlay(source);
+                threadCount++;
+                // Query the source to find out when it stops playing.
+                do
+                {
+                    Thread.Sleep(250);
+                    AL.GetSource(source, ALGetSourcei.SourceState, out state);
+                }
+                while ((ALSourceState)state == ALSourceState.Playing);
+
+                AL.SourceStop(source);
+                AL.DeleteSource(source);
+                AL.DeleteBuffer(buffer);
+                threadCount--;
+            }
+        }
         //OpenAL failure
-        /*
-        private byte[] LoadWave(Stream stream, out int channels, out int bits, out int rate)
+        // Loads a wave/riff audio file.
+        public static byte[] LoadWave(Stream stream, out int channels, out int bits, out int rate)
         {
             if (stream == null)
                 throw new ArgumentNullException("stream");
@@ -129,12 +189,11 @@ namespace Quget_Engine_One.Sound
                 channels = num_channels;
                 bits = bits_per_sample;
                 rate = sample_rate;
-
                 return reader.ReadBytes((int)reader.BaseStream.Length);
             }
         }
 
-        private ALFormat GetSoundFormat(int channels, int bits)
+        public static ALFormat GetSoundFormat(int channels, int bits)
         {
             switch (channels)
             {
@@ -143,33 +202,5 @@ namespace Quget_Engine_One.Sound
                 default: throw new NotSupportedException("The specified sound format is not supported.");
             }
         }
-
-        private int BufferData(byte[] data, ALFormat format, int sampleRate)
-        {
-            int handle = AL.GenBuffer();
-            AL.BufferData(handle, format, data, data.Length * sizeof(short), sampleRate);
-            return handle;
-        }
-
-        private void PlayData(byte[] data, ALFormat format, int sampleRate)
-        {
-            int buffer = BufferData(data, format, sampleRate);
-            int source = AL.GenSource();
-            AL.SourceQueueBuffer(source, buffer);
-            AL.SourcePlay(source);
-
-            // wait for source to finish playing
-            Thread.Sleep(5000);
-            AL.SourceStop(source);
-            AL.DeleteSource(source);
-            AL.DeleteBuffer(buffer);
-        }
-
-        public void PlayTest()
-        {
-            int channels, bits_per_sample, sample_rate;
-            byte[] bytes = LoadWave(File.Open(filename, FileMode.Open), out channels, out bits_per_sample, out sample_rate);
-            PlayData(bytes, GetSoundFormat(channels, bits_per_sample), sample_rate);
-        }*/
     }
 }

@@ -9,10 +9,13 @@ using System.Text;
 
 namespace Quget_Engine_One
 {
+    /// <summary>
+    /// Scene base class.
+    /// </summary>
     class Scene
     {
         private List<GameObject> gameObjects = new List<GameObject>();
-        private ICamera camera;
+        protected ICamera camera;
         protected Qui qui { private set; get; }
 
         protected GameWindow gameWindow { private set; get; }
@@ -21,14 +24,29 @@ namespace Quget_Engine_One
             this.gameWindow = gameWindow;
             qui = new Qui(this);
         }
+
         public virtual void OnLoad()
         {
             camera = new StaticCamera();
         }
+
+        public void Unload()
+        {
+            //for (int i = 0; i < gameObjects.Count; i++)
+            while(gameObjects.Count > 0)
+            {
+                RemoveGameObject(gameObjects[0]);
+
+                //gameObjects[i].Update(e.Time);
+            }
+        }
+
         public void LoadScene(int index)
         {
+            Unload();
             gameWindow.LoadScene(index);
         }
+
         public virtual void OnUpdateFrame(FrameEventArgs e)
         {
             for (int i = 0; i < gameObjects.Count; i++)
@@ -104,10 +122,17 @@ namespace Quget_Engine_One
                 if (quiObject.fixedOnCam)
                     return true;
             }
-
+            
             float renderPosX = (gameObject.position.X + camera.position.X);
             float renderPosY = (gameObject.position.Y + camera.position.Y);
+            //Console.WriteLine(renderPosX + ":" + renderPosY);
+            /*
+            if(renderPosX > 1 || renderPosX < -1)
+            {
+                return false;
+            }*/
             //Position check
+            /*
             if (renderPosX - gameObject.width > gameWindow.Width ||
                 renderPosX + gameObject.width < 0 ||
                  renderPosY - gameObject.height > gameWindow.Height ||
@@ -115,7 +140,7 @@ namespace Quget_Engine_One
             {
                 return false;
             }
-
+            */
             return true;
         }
     }

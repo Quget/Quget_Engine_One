@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Quget_Engine_One
 {
+    /// <summary>
+    /// Singleton mouse class
+    /// </summary>
     class QMouse
     {
         private static QMouse instance;
@@ -13,7 +16,7 @@ namespace Quget_Engine_One
             {
                 if (instance == null)
                 {
-                    throw new Exception("Keyboard not instance created");
+                    throw new Exception("Mouse not instance created");
                 }
                 return instance;
             }

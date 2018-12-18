@@ -8,10 +8,19 @@ using Quget_Engine_One.Gui.Text;
 
 namespace Quget_Engine_One
 {
+    /// <summary>
+    /// Spawn different kind of basic shapes.
+    /// </summary>
     class ObjectFactory
     {
-
-
+        /// <summary>
+        /// Cube with texture
+        /// </summary>
+        /// <param name="side"></param>
+        /// <param name="textureWidth"></param>
+        /// <param name="textureHeight"></param>
+        /// <param name="color"></param>
+        /// <returns></returns>
         public static TexturedVertex[] CreateTexturedCube(float side, float textureWidth, float textureHeight, Color4 color)
         {
             float h = 1;
@@ -65,6 +74,16 @@ namespace Quget_Engine_One
             };
             return vertices;
         }
+
+        /// <summary>
+        /// Quad with texture
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="spriteX"></param>
+        /// <param name="spriteY"></param>
+        /// <param name="color"></param>
+        /// <returns></returns>
         public static TexturedVertex[] CreateTexturedQuad(float width, float height,float spriteX,float spriteY, Color4 color)
         {
             //side = side / 2f; // half side - and other half
@@ -85,6 +104,14 @@ namespace Quget_Engine_One
             };
             return vertices;
         }
+
+        /// <summary>
+        /// used for characters for labels.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="color"></param>
+        /// <returns></returns>
         public static TexturedVertex[] CreateTexturedCharacter(float width, float height,Color4 color)
         {
             float h = 1;
@@ -105,6 +132,15 @@ namespace Quget_Engine_One
             };
             return vertices;
         }
+
+        /// <summary>
+        /// Quad with color instead of texture
+        /// </summary>
+        /// <param name="side"></param>
+        /// <param name="textureWidth"></param>
+        /// <param name="textureHeight"></param>
+        /// <param name="color"></param>
+        /// <returns></returns>
         public static TexturedVertex[] CreateTexturedQuad(float side, float textureWidth, float textureHeight, Color4 color)
         {
             side = side / 2f; // half side - and other half

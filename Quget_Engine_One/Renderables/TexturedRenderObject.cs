@@ -9,6 +9,9 @@ using OpenTK;
 
 namespace Quget_Engine_One.Renderables
 {
+    /// <summary>
+    /// A object with a texture!
+    /// </summary>
     class TexturedRenderObject :Renderable
     {
         private int texture;
@@ -16,6 +19,7 @@ namespace Quget_Engine_One.Renderables
         public TexturedVertex[] vertices;
         public float height;
         public float width;
+
         public TexturedRenderObject(TexturedVertex[] vertices, int program, string fileName):base(program,vertices.Length)
         {
             // create first buffer: vertex
@@ -67,6 +71,7 @@ namespace Quget_Engine_One.Renderables
             width = Math.Abs(vertices[0].position.X) * 2;
             height = Math.Abs(vertices[0].position.Y) * 2;
         }
+
         private int InitTextures(string fileName)
         {
             int width;
@@ -79,6 +84,7 @@ namespace Quget_Engine_One.Renderables
             GL.TextureSubImage2D(texture, 0, 0, 0, width, height, OpenTK.Graphics.OpenGL4.PixelFormat.Rgba, PixelType.Float, data);
             return texture;
         }
+
         private float[] LoadTexture(string fileName, out int width, out int height)
         {
             float[] colours;
@@ -102,11 +108,13 @@ namespace Quget_Engine_One.Renderables
             
             return colours;
         }
+
         public override void Bind()
         {
             base.Bind();
             GL.BindTexture(TextureTarget.Texture2D, texture);
         }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

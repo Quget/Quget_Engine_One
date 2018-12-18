@@ -65,6 +65,7 @@ namespace QConfig
                 return typeof(string);
 
         }
+
         public static Dictionary<string, QObject> LoadFileDict(string path)
         {
             try

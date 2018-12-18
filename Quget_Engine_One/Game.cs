@@ -16,6 +16,9 @@ using Quget_Engine_One.Scenes;
 
 namespace Quget_Engine_One
 {
+    /// <summary>
+    /// Holds the game Window and scenes.
+    /// </summary>
     class Game
     {
         private GameWindow gameWindow;

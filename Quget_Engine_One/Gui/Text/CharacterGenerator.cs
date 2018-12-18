@@ -7,6 +7,9 @@ using System.Text.RegularExpressions;
 
 namespace Quget_Engine_One.Gui.Text
 {
+    /// <summary>
+    /// Generate a bitmap with characters from the selected font.
+    /// </summary>
     class CharacterGenerator
     {
         private const string Characters = @"qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM0123456789µ§½!""#¤%&/()=?^*@£€${[]}\~¨'-_.:,;<>|°©®±¥";

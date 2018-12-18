@@ -7,6 +7,9 @@ using System.Text;
 
 namespace Quget_Engine_One.Renderables
 {
+    /// <summary>
+    /// Base class for rendable objects.
+    /// </summary>
     class Renderable : IDisposable
     {
         protected int vertexArray;
@@ -24,24 +27,29 @@ namespace Quget_Engine_One.Renderables
             GL.BindVertexArray(vertexArray);
             GL.BindBuffer(BufferTarget.ArrayBuffer, buffer);
         }
+
         public int GetProgram()
         {
             return program;
         }
+
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
         public virtual void Bind()
         {
             GL.UseProgram(program);
             GL.BindVertexArray(vertexArray);
         }
+
         public void Render()
         {
             GL.DrawArrays(PrimitiveType.Triangles, 0, verticesCount);
         }
+
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)

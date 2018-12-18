@@ -7,6 +7,9 @@ using System.Text;
 
 namespace Quget_Engine_One
 {
+    /// <summary>
+    /// Used to compile shaders
+    /// </summary>
     class ShaderProgram : IDisposable
     {
         public int id { private set; get; }
@@ -15,6 +18,7 @@ namespace Quget_Engine_One
         {
             id = GL.CreateProgram();
         }
+
         private int CompileShaders(ShaderType type, string path)
         {
             int shader = GL.CreateShader(type);
@@ -65,34 +69,6 @@ namespace Quget_Engine_One
 
         }
 
-        /*
-        private int CreateProgram()
-        {
-            int program = GL.CreateProgram();
-            var shaders = new List<int>();
-            shaders.Add(CompileShaders(ShaderType.VertexShader, "Content/Shaders/vertex-shader.vs"));
-            shaders.Add(CompileShaders(ShaderType.FragmentShader, "Content/Shaders/fragment-shader.fs"));
-
-            for (int i = 0; i < shaders.Count; i++)
-            {
-                GL.AttachShader(program, shaders[i]);
-            }
-
-            GL.LinkProgram(program);
-            var info = GL.GetProgramInfoLog(program);
-            if (!string.IsNullOrWhiteSpace(info))
-            {
-                Debug.WriteLine("GL.LinkProgram had info log:{0}", info);
-            }
-
-            for (int i = 0; i < shaders.Count; i++)
-            {
-                GL.DetachShader(program, shaders[i]);
-                GL.DeleteShader(shaders[i]);
-            }
-            return program;
-        }
-        */
         public void Dispose()
         {
             Dispose(true);

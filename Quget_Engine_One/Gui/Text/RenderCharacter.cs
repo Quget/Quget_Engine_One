@@ -11,6 +11,9 @@ using System.Text;
 
 namespace Quget_Engine_One.Gui.Text
 {
+    /// <summary>
+    /// Renders a character. No not a game character but one for text.
+    /// </summary>
     class RenderCharacter : QuiObject
     {
         private float _offset;

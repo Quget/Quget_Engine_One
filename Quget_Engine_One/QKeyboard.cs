@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Quget_Engine_One
 {
+    /// <summary>
+    /// Listen to keyboard inputs.
+    /// </summary>
     class QKeyboard
     {
         private static QKeyboard instance;
@@ -54,6 +57,7 @@ namespace Quget_Engine_One
                 keyDown.Add(e.Key, true);
             }
         }
+
         public bool GetKeyDown(Key key)
         {
             if (keyDown.ContainsKey(key))

@@ -8,6 +8,10 @@ using Quget_Engine_One.Camera;
 
 namespace Quget_Engine_One.GameObjects
 {
+    /// <summary>
+    /// A game object but with a sprite animation.
+    /// Sprite animation is using the shader.
+    /// </summary>
     class AnimatedGameObject : GameObject
     {
         private Dictionary<string,Animation> animations = new Dictionary<string, Animation>();
@@ -17,6 +21,7 @@ namespace Quget_Engine_One.GameObjects
         {
             
         }
+
         public bool IsPlaying(string name)
         {
             if (!animations.ContainsKey(name))
@@ -24,14 +29,17 @@ namespace Quget_Engine_One.GameObjects
 
             return animations[name].IsPlaying();
         }
+
         public void AddAnimation(string name, Animation animation)
         {
             animations.Add(name, animation);
         }
+
         public void ResetAnimation(string name)
         {
             animations[name].Reset();
         }
+
         public void StopAllAnimations()
         {
             foreach (KeyValuePair<string, Animation> animation in animations)
@@ -39,6 +47,7 @@ namespace Quget_Engine_One.GameObjects
                 animation.Value.Stop();
             }
         }
+
         public void PlayAnimation(string name)
         {
             if (!animations.ContainsKey(name))
@@ -53,6 +62,7 @@ namespace Quget_Engine_One.GameObjects
 
             animations[name].Stop();
         }
+
         public override void Update(double time)
         {
             foreach(KeyValuePair<string,Animation> animation in animations)
@@ -67,6 +77,7 @@ namespace Quget_Engine_One.GameObjects
             }
             base.Update(time);
         }
+
         public override void Render(ICamera camera)
         {
             //offsetIndex

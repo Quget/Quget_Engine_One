@@ -11,6 +11,9 @@ using Quget_Engine_One.Gui;
 
 namespace Quget_Engine_One.Gui.Text
 {
+    /// <summary>
+    /// A text label. Object
+    /// </summary>
     class Label : QuiObject
     {
         public const string Characters = @"qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM0123456789µ§½!""#¤%&/()=?^*@£€${[]}\~¨'-_.:,;<>|°©®±¥";
@@ -42,6 +45,7 @@ namespace Quget_Engine_One.Gui.Text
             }
             CharacterWidthNormalized = 1f / Characters.Length;
         }
+
         //public RenderText(Renderable model, Vector4 position, Color4 color, string value): base(model, position, Vector4.Zero, Vector4.Zero, 0)
         public Label(TexturedRenderObject render, Vector4 position, Vector4 rotation, string value, bool fixedOnCam) : base(render, position, rotation,"Text",fixedOnCam)
         {
@@ -49,6 +53,7 @@ namespace Quget_Engine_One.Gui.Text
             text = new List<RenderCharacter>(value.Length);
             SetText(value);
         }
+
         public void SetText(string value)
         {
             text.Clear();

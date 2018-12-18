@@ -10,6 +10,10 @@ using System.Text;
 
 namespace Quget_Engine_One.Gui
 {
+    /// <summary>
+    /// A Qui. Yes it is a play on Quget and Gui.
+    /// Holds methods to create buttons, text and in the future more.
+    /// </summary>
     class Qui
     {
         private Scene scene;
@@ -18,6 +22,7 @@ namespace Quget_Engine_One.Gui
         {
             this.scene = scene;
         }
+
         private string GenerateFontImage(string fontName, int fontSize)
         {
 
@@ -46,6 +51,7 @@ namespace Quget_Engine_One.Gui
             }
 
         }
+
         public Button CreateButton(string text, Vector2 position,Vector2 size, string fontName, int fontSize, Color4 color,Color4 textColor, bool fixedOnCam)
         {
             ShaderProgram animatedProgram = scene.GetShaderProgram("animated");

@@ -5,10 +5,13 @@ using System.Text;
 
 namespace Quget_Engine_One.Camera
 {
+    /// <summary>
+    /// Just a static camera.
+    /// </summary>
     class StaticCamera : ICamera
     {
         public Matrix4 positionMatrix { get; }
-        public Vector3 position { get; private set; }
+        public Vector3 position { get; set; }
         public StaticCamera()
         {
             Vector3 position;
@@ -24,6 +27,26 @@ namespace Quget_Engine_One.Camera
             translation.X = (gameWindow.Width / 2) - position.X;
             translation.Y = (gameWindow.Height / 2) - position.Y;
             translation.Z = 0;
+            positionMatrix = Matrix4.CreateTranslation(translation);
+            position = translation;
+        }
+
+        public StaticCamera(Vector3 position, bool threeD,GameWindow gameWindow)
+        {
+            Vector3 translation = new Vector3();
+            if(threeD)
+            {
+                translation.X =  position.X;
+                translation.Y =  position.Y;
+                translation.Z = position.Z;
+            }
+            else
+            {
+                translation.X = (gameWindow.Width / 2) - position.X;
+                translation.Y = (gameWindow.Height / 2) - position.Y;
+                translation.Z = 0;
+            }
+
             positionMatrix = Matrix4.CreateTranslation(translation);
             position = translation;
         }
