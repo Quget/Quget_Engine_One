@@ -138,6 +138,13 @@ namespace Quget_Engine_One.GameObjects
         {
             if (other == null || other.render == null)
                 return;
+            else
+            {
+                if(other.disposed || this.disposed)
+                {
+                    return;
+                }
+            }
             float x = positionRelCam.X - (width / 2);
             float y = positionRelCam.Y - (height / 2);
             float otherX = other.positionRelCam.X - (other.width / 2);
@@ -238,7 +245,6 @@ namespace Quget_Engine_One.GameObjects
 
         public void Dispose()
         {
-
             render.Dispose();
             disposed = true;
         }

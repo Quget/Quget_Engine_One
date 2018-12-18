@@ -4,18 +4,26 @@ using System.Text;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Input;
+using QConfig;
 using Quget_Engine_One.Camera;
 using Quget_Engine_One.GameObjects;
+using Quget_Engine_One.Gui.Text;
 using Quget_Engine_One.Renderables;
 
 namespace Quget_Engine_One.Scenes
 {
     class Scene02 : Scene
     {
-        private List<GameObject> rotatingCubes = new List<GameObject>();
+        private List<GameObject> noMoveCubes = new List<GameObject>();
 
         private Player playerCube;
 
+        private Label score;
+
+        private float spawnTimer = 0;
+        private float timeToSpawn = 10;
+
+        private List<Pickup> pickUps = new List<Pickup>();
         public Scene02(GameWindow gameWindow) : base(gameWindow)
         {
 
@@ -30,15 +38,13 @@ namespace Quget_Engine_One.Scenes
 
             TexturedRenderObject cube = new TexturedRenderObject(ObjectFactory.CreateTexturedCube(2, 2, 2, Color4.Azure), program.id, "Content/Textures/noMove.png");
 
-            int size = 2;
-            //TexturedRenderObject grass = new TexturedRenderObject(ObjectFactory.CreateTexturedQuad(size, size, 1, 1, Color4.White), program.id, "Content/Textures/grass.png");
-            //TexturedRenderObject noMove = new TexturedRenderObject(ObjectFactory.CreateTexturedQuad(size, size, 1, 1, Color4.Red), program.id, "Content/Textures/noMove.png");
+           
             TexturedRenderObject grass = new TexturedRenderObject(ObjectFactory.CreateTexturedCube(2, 2, 2, Color4.Azure), program.id, "Content/Textures/grass.png");
             TexturedRenderObject noMove = new TexturedRenderObject(ObjectFactory.CreateTexturedCube(2, 2, 2, Color4.Azure), program.id, "Content/Textures/noMove.png");
-            //TexturedRenderObject noMove = new TexturedRenderObject(ObjectFactory.CreateTexturedCube(size, 1, 1, Color4.Red), program.id, "Content/Textures/noMove.png");
+            
+            int size = 2;
             int y = 23;
             int x = 40;
-            //List<QObject> moveTiles = new List<QObject>();
             int count = 0;
             for (int j = 0; j < y; j++)
             {
@@ -50,76 +56,73 @@ namespace Quget_Engine_One.Scenes
                     {
                         GameObject go = new GameObject(noMove, new Vector4((i * size), (j * size), -19, 0), new Vector4(0, 0, 0, 0), "Tile" + i * j);
                         AddGameObject(go);
-                        rotatingCubes.Add(go);
+                        noMoveCubes.Add(go);
 
-                        // map.AddTile(size, size, i, j, Tile.Movement.NO_MOVE);
-                        /*
-                        QObject qObject = new QObject("movetile" + count);
-                        qObject.Add("Position", i + "," + j);
-                        qObject.Add("Size", 32 + "," + 32);
-                        qObject.Add("Movement", ((int)Tile.Movement.NO_MOVE).ToString());
-                        moveTiles.Add(qObject);*/
                     }
                     else
                     {
                         GameObject go = new GameObject(grass, new Vector4((i * size), (j * size), -20, 0), new Vector4(0, 0, 0, 0), "Tile" + i * j);
                         AddGameObject(go);
-
-                        //  map.AddTile(size, size, i, j, Tile.Movement.NORMAL);
-                        /*
-                        QObject qObject = new QObject("movetile" + count);
-                        qObject.Add("Position", i + "," + j);
-                        qObject.Add("Size", 32 + "," + 32);
-                        qObject.Add("Movement", ((int)Tile.Movement.NORMAL).ToString());
-                        moveTiles.Add(qObject);*/
                     }
                     count++;
 
                 }
             }
-
-            /*
-            Random random = new Random();
-            for(int i = 0; i < 10000; i++)
-            {
-                Vector4 position = new Vector4(random.Next(-100, 100), random.Next(-100, 100), random.Next(-100, -10), 0);
-                GameObject rotatingCube = new GameObject(cube, position, new Vector4(20, 20, 0, 0), "Cube");
-                AddGameObject(rotatingCube);
-                rotatingCubes.Add(rotatingCube);
-            }
-            */
-
-
-            //TexturedRenderObject cube = new TexturedRenderObject(ObjectFactory.CreateTexturedCube(5, 5, 5, Color4.Azure), program.id, "Content/Textures/noMove.png");
-
+            
             ShaderProgram animatedProgram = GetShaderProgram("animated");
             cube = new TexturedRenderObject(ObjectFactory.CreateTexturedCube(2, 2, 2, Color4.Azure), animatedProgram.id, "Content/Textures/default.png");
-            playerCube = new Player(cube, new Vector4(20, 20, -18f, 0), new Vector4(0, 0, 0, 0), "Cube2");
+            playerCube = new Player(cube, new Vector4(20, 20, -18f, 0), new Vector4(0, 0, 0, 0), "Player");
             AddGameObject(playerCube);
             playerCube.AddAnimation("dance", new Animation(4, 11, 2));
             playerCube.AddAnimation("walk", new Animation(0, 3, 1));
             playerCube.PlayAnimation("idle");
 
 
-            qui.CreateText("Hello World This is scene2", new Vector3(-1, 0.5f, -1), "Segoe UI Black", 12, 0.05f, -0.05f, Color4.Red, true);
+            score = qui.CreateText("0", new Vector3(-1, 0.5f, -1), "Segoe UI Black", 12, 0.05f, -0.05f, Color4.Red, true);
 
             FollowCamera followCamera = new FollowCamera(playerCube,new Vector3(0,0,10),true,gameWindow);
 
-            //ThirdPersonCamera thirdPersonCamera = new ThirdPersonCamera(playerCube, new Vector3(0, 0, 0));
-
             SetCamera(followCamera);
+            SpawnPickUp();
+        }
 
-            //SetCamera(new ThirdPersonCamera(zMovingCube,new Vector3(0,0,0)));
-            //SetCamera(new StaticCamera(new Vector3(-20,-20,10),true,gameWindow));
-            //SetCamera(new FollowCamera(zMovingCube, gameWindow));
+        private void SpawnPickUp()
+        {
+            ShaderProgram program = GetShaderProgram("default");
+            TexturedRenderObject cube = new TexturedRenderObject(ObjectFactory.CreateTexturedCube(2, 2, 2, Color4.OrangeRed), program.id, "Content/Textures/default.png");
+            Random random = new Random();
+            
+            Pickup pickup = new Pickup(cube, new Vector4(random.Next(5, 50), random.Next(5, 50), -18f, 0), new Vector4(0, 0, 0, 0), "PickUp");
+            AddGameObject(pickup);
+            pickUps.Add(pickup);
 
+            //playerCube = new Player(cube, new Vector4(20, 20, -18f, 0), new Vector4(0, 0, 0, 0), "Cube2");
         }
 
         public override void OnUpdateFrame(FrameEventArgs e)
         {
-            for (int i = 0; i < rotatingCubes.Count; i++)
+            spawnTimer += (float)e.Time;
+            if(spawnTimer > timeToSpawn)
             {
-                playerCube.Collision(rotatingCubes[i]);
+                SpawnPickUp();
+                spawnTimer = 0;
+            }
+            score.SetText("Score: " + playerCube.Score);
+
+            for (int i = 0; i < pickUps.Count; i++)
+            {
+                if(pickUps[i] == null)
+                {
+                    pickUps.RemoveAt(0);
+                    i = -1;
+                    continue;
+                }
+                playerCube.Collision(pickUps[i]);
+            }
+
+            for (int i = 0; i < noMoveCubes.Count; i++)
+            {
+                playerCube.Collision(noMoveCubes[i]);
             }
 
 

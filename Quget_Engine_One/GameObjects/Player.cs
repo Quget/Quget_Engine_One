@@ -10,6 +10,9 @@ namespace Quget_Engine_One.GameObjects
     class Player : AnimatedGameObject
     {
         private Vector4 startPos;
+
+        public float Score { get; private set; }
+
         public Player(TexturedRenderObject render, Vector4 position, Vector4 rotation, string name) : base(render, position, rotation, name)
         {
             startPos = position;
@@ -17,6 +20,17 @@ namespace Quget_Engine_One.GameObjects
 
         protected override void OnCollision(GameObject other)
         {
+            if (other.disposed)
+                return;
+
+            Pickup pickup = other as Pickup;
+            if (pickup != null && !pickup.disposed)
+            {
+                Score++;
+                other.Remove();
+                other = null;
+                return;
+            }
             SetPosition(startPos.X, startPos.Y, startPos.Z, startPos.W);
             base.OnCollision(other);
         }
